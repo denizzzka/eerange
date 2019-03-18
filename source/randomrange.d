@@ -55,7 +55,7 @@ import eerange.base;
 }
 
 ///
-auto eeRandomRange(T)(T inputRange) pure
+auto eeRandomRange(T)(T inputRange) pure @nogc
 {
     return EachWithEachOtherRandomAccessRange!(T)(inputRange);
 }
