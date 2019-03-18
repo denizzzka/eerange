@@ -1,4 +1,4 @@
-/// "Each with each other" random range
+///
 module eerange.base;
 
 @safe:
