@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/eerange
+eerange.so
+eerange.dylib
+eerange.dll
+eerange.a
+eerange.lib
+eerange-test-*
+*.exe
+*.o
+*.obj
+*.lst
