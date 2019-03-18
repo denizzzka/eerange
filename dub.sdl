@@ -1,0 +1,6 @@
+name "eerange"
+description "\"Each with each other\" range implementation"
+authors "White-116" "Denis Feklushkin"
+copyright "Copyright © 2019"
+license "MIT"
+dflags "-dip25"
