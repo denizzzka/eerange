@@ -78,9 +78,9 @@ struct EachWithEachOtherRandomAccessRange(R)
 }
 
 ///
-auto eeRandomRange(T)(T inputRange) pure @nogc
+auto eeRandomRange(T)(T srcRange) pure @nogc
 {
-    return EachWithEachOtherRandomAccessRange!(T)(inputRange);
+    return EachWithEachOtherRandomAccessRange!(T)(srcRange);
 }
 
 unittest
