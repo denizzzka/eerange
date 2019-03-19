@@ -44,13 +44,13 @@ struct EachWithEachOtherRangeBase(R)
     else
         private alias T = ElementType!R;
 
-    private T[2] getElemBySquareCoords(in Coords c) inout pure
+    private T[2] getElemBySquareCoords(in Coords c)
     {
         return [srcRange[c.x], srcRange[c.y]];
     }
 
     ///
-    T[2] opIndex(size_t idx) inout pure
+    T[2] opIndex(size_t idx)
     {
         assert(idx < length);
 
