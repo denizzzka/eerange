@@ -50,7 +50,7 @@ struct EachWithEachOtherRangeBase(R)
     }
 
     ///
-    T[2] opIndex(size_t idx)
+    T[2] opIndex(size_t idx) //TODO: rewrite to support pairs of indexes instead
     {
         assert(idx < length);
 
