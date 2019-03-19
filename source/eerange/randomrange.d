@@ -4,20 +4,23 @@ module eerange.randomrange;
 import eerange.base;
 
 @safe:
+//~ nothrow:
 
 ///
-struct EachWithEachOtherRandomAccessRange(R)
+struct EachWithEachOtherRandomAccessRange(T = size_t)
 {
-    EachWithEachOtherRangeBase!R base;
+    @nogc:
+
+    EachWithEachOtherRangeBase!T base;
     alias base this;
 
-    private size_t fwdIdx = 0;
+    private size_t fwdIdx;
     private size_t backIdx;
 
     ///
-    this(R r) @nogc
+    this(T srcLen) pure
     {
-        base = EachWithEachOtherRangeBase!R(r);
+        base = EachWithEachOtherRangeBase!T(srcLen);
 
         backIdx = length - 1;
     }
@@ -51,13 +54,7 @@ struct EachWithEachOtherRandomAccessRange(R)
     void popBack() { backIdx--; }
 
     ///
-    EachWithEachOtherRandomAccessRange!R save() { return this; }
-}
-
-///
-auto eeRandomRange(T)(T srcRange) pure
-{
-    return EachWithEachOtherRandomAccessRange!(T)(srcRange);
+    EachWithEachOtherRandomAccessRange!T save() { return this; }
 }
 
 unittest
@@ -65,24 +62,32 @@ unittest
     import std.range.primitives;
     import std.traits;
 
-    alias R = EachWithEachOtherRandomAccessRange!(int[]);
+    alias R = EachWithEachOtherRandomAccessRange!int;
 
+    static assert(hasLength!R);
     static assert(is(typeof(lvalueOf!R[1]) == ElementType!R));
     static assert(isInputRange!R);
+    static assert(!isNarrowString!R);
     static assert(is(ReturnType!((R r) => r.save) == R));
     static assert(isForwardRange!R);
     static assert(isBidirectionalRange!R);
+    static assert(!is(typeof(lvalueOf!R[$ - 1])));
     static assert(isRandomAccessRange!R);
+}
+
+///
+auto eweo(T)(T srcLen) pure
+{
+    return EachWithEachOtherRandomAccessRange!(T)(srcLen);
 }
 
 @trusted unittest
 {
-    import std.range: iota;
     import std.parallelism;
 
-    enum testSize = 100;
+    const ubyte testSize = 100;
 
-    auto eeRandom = iota(0, testSize).eeRandomRange;
+    auto eeRandom = eweo(testSize);
     auto randomRes = taskPool.amap!("a[0]", "a[1]")(eeRandom);
 
     size_t[testSize] cnt;

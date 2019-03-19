@@ -2,70 +2,63 @@
 module eerange.base;
 
 @safe:
-//~ @nogc:
+//~ nothrow:
 
 ///
-struct EachWithEachOtherRangeBase(R)
+immutable struct EachWithEachOtherRangeBase(T)
 {
-    private R srcRange;
+    @nogc:
+
+    private T srcLength;
 
     ///
-    this(R r)
+    this(T srcLen) pure
     {
-        srcRange = r;
+        srcLength = srcLen;
     }
 
     ///
-    size_t length() const pure @nogc
+    size_t length() pure
     {
-        const len = srcRange.length;
+        const len = srcLength;
 
         return (len * len - len) / 2;
     }
 
     private static struct Coords
     {
-        size_t x;
-        size_t y;
+        T x;
+        T y;
     }
 
-    private Coords coordsInSquare(size_t idx) const pure
+    private Coords coordsInSquare(size_t idx) pure
     {
         return Coords(
-            idx % srcRange.length,
-            idx / srcRange.length
+            cast(T) idx % srcLength,
+            cast(T) idx / srcLength
         );
     }
 
-    import std.range.primitives: ElementType;
-
-    static if(is(ElementType!R == void))
-        private alias T = typeof(R[0]);
-    else
-        private alias T = ElementType!R;
-
-    private T[2] getElemBySquareCoords(in Coords c)
-    {
-        return [srcRange[c.x], srcRange[c.y]];
-    }
-
     ///
-    T[2] opIndex(size_t idx) //TODO: rewrite to support pairs of indexes instead
+    T[2] opIndex(size_t idx) pure
     {
         assert(idx < length);
 
         Coords coords = coordsInSquare(idx);
 
+        import std.traits;
+        static assert(isMutable!Coords);
+
         if(coords.x <= coords.y) // under diagonal line?
         {
-            const latestIdx = srcRange.length - 1;
+            const latestIdx = srcLength - 1;
 
             // Mirroring coords
             coords.x = latestIdx - coords.x;
             coords.y = latestIdx - coords.y - 1; // shifted above diagonal
         }
 
-        return getElemBySquareCoords(coords);
+        return [coords.x, coords.y];
     }
 }
 
@@ -73,9 +66,9 @@ unittest
 {
     import std.parallelism;
 
-    int[] arr = [100, 200, 300, 400];
+    enum srcLen = 4;
 
-    auto r = EachWithEachOtherRangeBase!(int[])(arr);
+    auto r = EachWithEachOtherRangeBase!size_t(srcLen);
 
     size_t cnt;
 
