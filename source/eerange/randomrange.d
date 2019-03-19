@@ -75,10 +75,7 @@ unittest
 }
 
 ///
-auto eweo(T)(T srcLen) pure
-{
-    return EachWithEachOtherRandomAccessRange(srcLen);
-}
+alias eweo = EachWithEachOtherRandomAccessRange;
 
 @trusted unittest
 {
