@@ -2,7 +2,6 @@
 module eerange.base;
 
 @safe:
-//~ nothrow:
 
 ///
 immutable struct EachWithEachOtherRangeBase
@@ -12,13 +11,13 @@ immutable struct EachWithEachOtherRangeBase
     private size_t srcLength;
 
     ///
-    this(size_t srcLen) pure
+    this(size_t srcLen) pure nothrow
     {
         srcLength = srcLen;
     }
 
     ///
-    size_t length() pure const
+    size_t length() pure const nothrow
     {
         const len = srcLength;
 

@@ -4,7 +4,6 @@ module eerange.randomrange;
 import eerange.base;
 
 @safe:
-//~ nothrow:
 
 ///
 struct EachWithEachOtherRandomAccessRange
@@ -18,7 +17,7 @@ struct EachWithEachOtherRandomAccessRange
     private size_t backIdx;
 
     ///
-    this(size_t srcLen) pure
+    this(size_t srcLen) pure nothrow
     {
         base = EachWithEachOtherRangeBase(srcLen);
 
