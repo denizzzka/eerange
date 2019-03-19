@@ -5,20 +5,20 @@ module eerange.base;
 //~ nothrow:
 
 ///
-immutable struct EachWithEachOtherRangeBase(T)
+immutable struct EachWithEachOtherRangeBase
 {
     @nogc:
 
-    private T srcLength;
+    private size_t srcLength;
 
     ///
-    this(T srcLen) pure
+    this(size_t srcLen) pure
     {
         srcLength = srcLen;
     }
 
     ///
-    size_t length() pure
+    size_t length() pure const
     {
         const len = srcLength;
 
@@ -27,27 +27,27 @@ immutable struct EachWithEachOtherRangeBase(T)
 
     private static struct Coords
     {
-        T x;
-        T y;
+        size_t x;
+        size_t y;
     }
 
     private Coords coordsInSquare(size_t idx) pure
     {
         return Coords(
-            cast(T) idx % srcLength,
-            cast(T) idx / srcLength
+            idx % srcLength,
+            idx / srcLength
         );
     }
 
     ///
-    T[2] opIndex(size_t idx) pure
+    size_t[2] opIndex(size_t idx) pure
     {
         assert(idx < length);
 
         Coords coords = coordsInSquare(idx);
 
         import std.traits;
-        static assert(isMutable!Coords);
+        static assert(isMutable!(typeof(coords)));
 
         if(coords.x <= coords.y) // under diagonal line?
         {
@@ -68,7 +68,7 @@ unittest
 
     enum srcLen = 4;
 
-    auto r = EachWithEachOtherRangeBase!size_t(srcLen);
+    auto r = EachWithEachOtherRangeBase(srcLen);
 
     size_t cnt;
 

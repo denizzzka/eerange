@@ -7,20 +7,20 @@ import eerange.base;
 //~ nothrow:
 
 ///
-struct EachWithEachOtherRandomAccessRange(T = size_t)
+struct EachWithEachOtherRandomAccessRange
 {
     @nogc:
 
-    EachWithEachOtherRangeBase!T base;
+    EachWithEachOtherRangeBase base;
     alias base this;
 
     private size_t fwdIdx;
     private size_t backIdx;
 
     ///
-    this(T srcLen) pure
+    this(size_t srcLen) pure
     {
-        base = EachWithEachOtherRangeBase!T(srcLen);
+        base = EachWithEachOtherRangeBase(srcLen);
 
         backIdx = length - 1;
     }
@@ -54,7 +54,7 @@ struct EachWithEachOtherRandomAccessRange(T = size_t)
     void popBack() { backIdx--; }
 
     ///
-    EachWithEachOtherRandomAccessRange!T save() { return this; }
+    EachWithEachOtherRandomAccessRange save() { return this; }
 }
 
 unittest
@@ -62,7 +62,7 @@ unittest
     import std.range.primitives;
     import std.traits;
 
-    alias R = EachWithEachOtherRandomAccessRange!int;
+    alias R = EachWithEachOtherRandomAccessRange;
 
     static assert(hasLength!R);
     static assert(is(typeof(lvalueOf!R[1]) == ElementType!R));
@@ -78,14 +78,15 @@ unittest
 ///
 auto eweo(T)(T srcLen) pure
 {
-    return EachWithEachOtherRandomAccessRange!(T)(srcLen);
+    return EachWithEachOtherRandomAccessRange(srcLen);
 }
 
 @trusted unittest
 {
     import std.parallelism;
+    import std.format;
 
-    const ubyte testSize = 100;
+    enum ubyte testSize = 100;
 
     auto eeRandom = eweo(testSize);
     auto randomRes = taskPool.amap!("a[0]", "a[1]")(eeRandom);
@@ -98,6 +99,6 @@ auto eweo(T)(T srcLen) pure
         cnt[r[1]]++;
     }
 
-    foreach(r; cnt)
-        assert(r == testSize-1);
+    foreach(i, r; cnt)
+        assert(r == testSize-1, format("%d %d", i, r));
 }
