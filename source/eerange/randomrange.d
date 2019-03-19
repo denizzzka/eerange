@@ -1,32 +1,9 @@
 /// "Each with each other" random range
 module eerange.randomrange;
 
-@trusted unittest
-{
-    import std.range: iota;
-    import std.parallelism;
-
-    enum testSize = 100;
-
-    auto eeRandom = iota(0, testSize).eeRandomRange;
-    auto randomRes = taskPool.amap!("a[0]", "a[1]")(eeRandom);
-
-    size_t[testSize] cnt;
-
-    foreach(r; randomRes)
-    {
-        cnt[r[0]]++;
-        cnt[r[1]]++;
-    }
-
-    foreach(r; cnt)
-        assert(r == testSize-1);
-}
-
 import eerange.base;
 
 @safe:
-@nogc:
 
 ///
 struct EachWithEachOtherRandomAccessRange(R)
@@ -38,7 +15,7 @@ struct EachWithEachOtherRandomAccessRange(R)
     private size_t backIdx;
 
     ///
-    this(R r)
+    this(R r) @nogc
     {
         base = EachWithEachOtherRangeBase!R(r);
 
@@ -46,7 +23,7 @@ struct EachWithEachOtherRandomAccessRange(R)
     }
 
     ///
-    bool empty() const
+    bool empty() const @nogc
     {
         return fwdIdx >= length || backIdx < 0;
     }
@@ -78,7 +55,7 @@ struct EachWithEachOtherRandomAccessRange(R)
 }
 
 ///
-auto eeRandomRange(T)(T srcRange) pure @nogc
+auto eeRandomRange(T)(T srcRange) pure
 {
     return EachWithEachOtherRandomAccessRange!(T)(srcRange);
 }
@@ -96,4 +73,26 @@ unittest
     static assert(isForwardRange!R);
     static assert(isBidirectionalRange!R);
     static assert(isRandomAccessRange!R);
+}
+
+@trusted unittest
+{
+    import std.range: iota;
+    import std.parallelism;
+
+    enum testSize = 100;
+
+    auto eeRandom = iota(0, testSize).eeRandomRange;
+    auto randomRes = taskPool.amap!("a[0]", "a[1]")(eeRandom);
+
+    size_t[testSize] cnt;
+
+    foreach(r; randomRes)
+    {
+        cnt[r[0]]++;
+        cnt[r[1]]++;
+    }
+
+    foreach(r; cnt)
+        assert(r == testSize-1);
 }

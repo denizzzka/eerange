@@ -1,28 +1,8 @@
 ///
 module eerange.base;
 
-unittest
-{
-    import std.parallelism;
-
-    int[] arr = [100, 200, 300, 400];
-
-    auto r = EachWithEachOtherRangeBase!(int[])(arr);
-
-    size_t cnt;
-
-    foreach(i; 0 .. r.length)
-    {
-        auto pair = r[i];
-
-        cnt++;
-    }
-
-    assert(cnt == 6);
-}
-
 @safe:
-@nogc:
+//~ @nogc:
 
 ///
 struct EachWithEachOtherRangeBase(R)
@@ -36,7 +16,7 @@ struct EachWithEachOtherRangeBase(R)
     }
 
     ///
-    size_t length() const pure
+    size_t length() const pure @nogc
     {
         const len = srcRange.length;
 
@@ -59,7 +39,10 @@ struct EachWithEachOtherRangeBase(R)
 
     import std.range.primitives: ElementType;
 
-    private alias T = ElementType!R;
+    static if(is(ElementType!R == void))
+        private alias T = typeof(R[0]);
+    else
+        private alias T = ElementType!R;
 
     private T[2] getElemBySquareCoords(Coords c) const pure
     {
@@ -84,4 +67,24 @@ struct EachWithEachOtherRangeBase(R)
 
         return getElemBySquareCoords(coords);
     }
+}
+
+unittest
+{
+    import std.parallelism;
+
+    int[] arr = [100, 200, 300, 400];
+
+    auto r = EachWithEachOtherRangeBase!(int[])(arr);
+
+    size_t cnt;
+
+    foreach(i; 0 .. r.length)
+    {
+        auto pair = r[i];
+
+        cnt++;
+    }
+
+    assert(cnt == 6);
 }
