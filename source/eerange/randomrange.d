@@ -11,46 +11,49 @@ struct EachWithEachOtherRandomAccessRange
     @nogc:
 
     EachWithEachOtherRangeBase base;
-    alias base this;
+    //~ alias base this;
 
     private size_t fwdIdx;
     private size_t backIdx;
-    private size_t offset; /// for slicing purposes
+    private size_t sliceStart; /// slice index start
+    private size_t sliceEnd; ///  slice index end
 
     ///
-    this(size_t srcLen, size_t _offset = 0) pure nothrow
+    this(size_t srcLen, size_t _sliceStart = 0, size_t _sliceEnd = 0) pure nothrow
     {
-        offset = _offset;
-
         base = EachWithEachOtherRangeBase(srcLen);
 
-        backIdx = length - 1;
+        sliceStart = _sliceStart;
+        sliceEnd = _sliceEnd ? _sliceEnd : base.length;
+
+        assert(sliceStart < sliceEnd);
+
+        fwdIdx = sliceStart;
+        backIdx = sliceEnd;
     }
 
     ///
     size_t length() pure const nothrow
     {
-        const len = base.srcLength - offset;
-
-        return (len * len - len) / 2;
+        return sliceEnd - sliceStart;
     }
 
     ///
     size_t[2] opIndex(size_t idx) pure
     {
-        return base.opIndex(idx + offset);
+        return base.opIndex(sliceStart + idx);
     }
 
     ///
     bool empty() const @nogc
     {
-        return fwdIdx >= length || backIdx < 0;
+        return fwdIdx >= sliceEnd || backIdx < sliceStart;
     }
 
     auto front() {
         version(D_NoBoundsChecks){}
         else
-            assert(!empty);
+            assert(!empty); //FIXME
 
         return opIndex(fwdIdx);
     }
@@ -75,7 +78,7 @@ struct EachWithEachOtherRandomAccessRange
     ///
     //~ EachWithEachOtherRandomAccessRange opSlice(size_t from, size_t to)
     //~ {
-        //~ return EachWithEachOtherRandomAccessRange(offset + to, offset + from);
+        //~ return EachWithEachOtherRandomAccessRange(base.srcLength, from, to);
     //~ }
 
     ///
