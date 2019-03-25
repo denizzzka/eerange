@@ -11,7 +11,6 @@ struct EachWithEachOtherRandomAccessRange
     @nogc:
 
     EachWithEachOtherRangeBase base;
-    //~ alias base this;
 
     private size_t fwdIdx;
     private size_t backIdx;
@@ -28,8 +27,7 @@ struct EachWithEachOtherRandomAccessRange
 
         assert(sliceStart < sliceEnd);
 
-        fwdIdx = sliceStart;
-        backIdx = sliceEnd;
+        backIdx = length - 1;
     }
 
     ///
@@ -47,7 +45,7 @@ struct EachWithEachOtherRandomAccessRange
     ///
     bool empty() const @nogc
     {
-        return fwdIdx >= sliceEnd || backIdx < sliceStart;
+        return fwdIdx >= length || backIdx < 0;
     }
 
     auto front() {
@@ -76,10 +74,10 @@ struct EachWithEachOtherRandomAccessRange
     EachWithEachOtherRandomAccessRange save() { return this; }
 
     ///
-    //~ EachWithEachOtherRandomAccessRange opSlice(size_t from, size_t to)
-    //~ {
-        //~ return EachWithEachOtherRandomAccessRange(base.srcLength, from, to);
-    //~ }
+    EachWithEachOtherRandomAccessRange opSlice(size_t from, size_t to)
+    {
+        return EachWithEachOtherRandomAccessRange(base.srcLength, sliceStart + from, sliceStart + to);
+    }
 
     ///
     size_t opDollar(size_t pos)()
@@ -136,7 +134,7 @@ unittest
 {
     auto eeRandom = eweo(4);
 
-    //~ auto slice = eeRandom[0 .. $];
+    auto slice = eeRandom[0 .. $];
 
-    //~ assert(slice.length == eeRandom.length);
+    assert(slice.length == eeRandom.length);
 }
