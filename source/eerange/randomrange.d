@@ -49,18 +49,26 @@ struct EachWithEachOtherRandomAccessRange
         return fwdIdx >= sliceEnd || backIdx < sliceStart;
     }
 
-    auto front() {
+    private void checkEmpty()
+    {
         version(D_NoBoundsChecks){}
         else
-            assert(!empty); //FIXME
+        {
+            import core.exception: RangeError;
+
+            if(empty)
+                throw new RangeError;
+        }
+    }
+
+    auto front() {
+        checkEmpty();
 
         return base.opIndex(fwdIdx);
     }
 
     auto back() {
-        version(D_NoBoundsChecks){}
-        else
-            assert(!empty); //FIXME
+        checkEmpty();
 
         return base.opIndex(backIdx);
     }
