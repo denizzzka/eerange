@@ -8,7 +8,7 @@ immutable struct EachWithEachOtherRangeBase
 {
     @nogc:
 
-    private size_t srcLength;
+    package size_t srcLength;
 
     ///
     this(size_t srcLen) pure nothrow
