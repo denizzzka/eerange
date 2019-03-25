@@ -41,7 +41,14 @@ immutable struct EachWithEachOtherRangeBase
     ///
     size_t[2] opIndex(size_t idx) pure
     {
-        assert(idx < length);
+        version(D_NoBoundsChecks){}
+        else
+        {
+            import core.exception: RangeError;
+
+            if(idx >= length)
+                throw new RangeError;
+        }
 
         Coords coords = coordsInSquare(idx);
 
