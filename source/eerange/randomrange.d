@@ -116,11 +116,21 @@ alias eweo = EachWithEachOtherRandomAccessRange;
     enum ubyte testSize = 100;
 
     auto eeRandom = eweo(testSize);
-    auto randomRes = taskPool.amap!("a[0]", "a[1]")(eeRandom);
+    auto slice1 = eeRandom[0 .. 50];
+    auto slice2 = eeRandom[50 .. $];
+
+    auto randomRes1 = taskPool.amap!("a[0]", "a[1]")(slice1);
+    auto randomRes2 = taskPool.amap!("a[0]", "a[1]")(slice2);
 
     size_t[testSize] cnt;
 
-    foreach(r; randomRes)
+    foreach(r; randomRes1)
+    {
+        cnt[r[0]]++;
+        cnt[r[1]]++;
+    }
+
+    foreach(r; randomRes2)
     {
         cnt[r[0]]++;
         cnt[r[1]]++;
