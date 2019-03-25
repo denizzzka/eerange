@@ -27,7 +27,8 @@ struct EachWithEachOtherRandomAccessRange
 
         assert(sliceStart < sliceEnd);
 
-        backIdx = length - 1;
+        fwdIdx = sliceStart;
+        backIdx = sliceEnd - 1;
     }
 
     ///
@@ -45,7 +46,7 @@ struct EachWithEachOtherRandomAccessRange
     ///
     bool empty() const @nogc
     {
-        return fwdIdx >= length || backIdx < 0;
+        return fwdIdx >= sliceEnd || backIdx < sliceStart;
     }
 
     auto front() {
@@ -53,15 +54,15 @@ struct EachWithEachOtherRandomAccessRange
         else
             assert(!empty); //FIXME
 
-        return opIndex(fwdIdx);
+        return base.opIndex(fwdIdx);
     }
 
     auto back() {
         version(D_NoBoundsChecks){}
         else
-            assert(!empty);
+            assert(!empty); //FIXME
 
-        return opIndex(backIdx);
+        return base.opIndex(backIdx);
     }
 
     ///
@@ -101,7 +102,6 @@ unittest
     static assert(is(ReturnType!((R r) => r.save) == R));
     static assert(isForwardRange!R);
     static assert(isBidirectionalRange!R);
-    //~ static assert(!is(typeof(lvalueOf!R[$ - 1])));
     static assert(isRandomAccessRange!R);
 }
 
