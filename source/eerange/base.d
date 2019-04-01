@@ -4,7 +4,7 @@ module eerange.base;
 @safe:
 
 ///
-immutable struct EachWithEachOtherRangeBase
+struct EachWithEachOtherRangeBase
 {
     @nogc:
 
