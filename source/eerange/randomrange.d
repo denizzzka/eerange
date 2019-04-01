@@ -13,7 +13,7 @@ struct EachWithEachOtherRandomAccessRange
     EachWithEachOtherRangeBase base;
 
     private size_t fwdIdx;
-    private size_t backIdx;
+    private ptrdiff_t backIdx;
     private size_t sliceStart; /// slice index start
     private size_t sliceEnd; ///  slice index end
 
@@ -25,7 +25,9 @@ struct EachWithEachOtherRandomAccessRange
         sliceStart = _sliceStart;
         sliceEnd = _sliceEnd ? _sliceEnd : base.length;
 
-        assert(sliceStart < sliceEnd);
+        assert(sliceStart <= sliceEnd);
+        //~ import std.conv: to;
+        //~ assert(sliceStart <= sliceEnd, "srcLen="~srcLen.to!string~" sliceStart="~sliceStart.to!string~" sliceEnd="~sliceEnd.to!string);
 
         fwdIdx = sliceStart;
         backIdx = sliceEnd - 1;
@@ -155,4 +157,15 @@ unittest
     auto slice = eeRandom[0 .. $];
 
     assert(slice.length == eeRandom.length);
+}
+
+unittest
+{
+    auto zero = eweo(0);
+
+    assert(zero.empty);
+
+    auto single = eweo(1);
+
+    assert(single.empty);
 }
